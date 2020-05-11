@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Post;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class PostsController extends Controller
 {
@@ -35,14 +36,16 @@ class PostsController extends Controller
             'image' => ['required', 'image'],
         ]);
 
-        $imagePath = request('image')->store('uploads', 'public');
+        $image = request('image');
+        $extension = $image->getClientOriginalExtension();
+        $filename = md5(time()).'_'.$image->getClientOriginalName();
+        $imageStream = Image::make($image)->fit(1000, 1000)->encode($extension);
 
-        $image = Image::make(public_path("storage/{$imagePath}"))->fit(1200, 1200);
-        $image->save();
+        Storage::disk('s3')->put('/posts/'.$filename, (string)$imageStream, 'public');
 
         auth()->user()->posts()->create([
             'caption' => $data['caption'],
-            'image' => $imagePath,
+            'image' => $filename,
         ]);
 
         return redirect('/profile/' . auth()->user()->id);

@@ -11,9 +11,9 @@ class Profile extends Model
 
     public function profileImage()
     {
-        $imagePath = ($this->image) ? $this->image : 'profile/0vKpK83mParj0Fz18H8OfvKNBeIJUmkPSWgVCCvK.png';
+        $imagePath = ($this->image) ? $this->image : 'https://jetstagram-bucket.s3.amazonaws.com/resources/default-avatar.png';
 
-        return '/storage/' . $imagePath;
+        return  'https://jetstagram-bucket.s3.amazonaws.com/profile/' .$imagePath;
     }
 
     public function user()

@@ -6,13 +6,14 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class ProfilesController extends Controller
 {
 
     public function edit(User $user)
     {
-        // $this->authorize('update', $user->profile);
+        $this->authorize('update', $user->profile);
 
         return view('profiles.edit', compact('user'));
     }
@@ -58,12 +59,14 @@ class ProfilesController extends Controller
         ]);
 
         if (request('image')) {
-            $imagePath = request('image')->store('profile', 'public');
+            $avatar = request('image');
+            $extension = $avatar->getClientOriginalExtension();
+            $filename = md5(time()).'_'.$avatar->getClientOriginalName();
+            $image = Image::make($avatar)->fit(400, 400)->encode($extension);
 
-            // $image = Image::make(public_path("storage/{$imagePath}"))->fit(1000, 1000);
-            // $image->save();
+            Storage::disk('s3')->put('/profile/'.$filename, (string)$image, 'public');
 
-            $imageArray = ['image' => $imagePath];
+            $imageArray = ['image' => $filename];
         }
 
         auth()->user()->profile->update(array_merge(
