@@ -17,7 +17,8 @@
         "laravel/telescope": "^3.3",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.0",
-        "phpseclib/bcmath_compat": "1.0.4"
+        "phpseclib/bcmath_compat": "1.0.4",
+        "ext-gd": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
